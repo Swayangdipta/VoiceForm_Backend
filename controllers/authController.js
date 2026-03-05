@@ -6,6 +6,7 @@ exports.register = async (req, res) => {
   const { first_name, last_name, phone, email, password, location } = req.body;
 
   const hashedPassword = await bcrypt.hash(password, 10);
+  console.log("Hitting registration");
 
   await pool.query(
     `INSERT INTO users 
@@ -13,6 +14,9 @@ exports.register = async (req, res) => {
      VALUES (?, ?, ?, ?, ?, ?, 1)`,
     [first_name, last_name, phone, email, location, hashedPassword]
   );
+
+  console.log("Success registration");
+  
 
   res.json({ message: "User registered successfully" });
 };
