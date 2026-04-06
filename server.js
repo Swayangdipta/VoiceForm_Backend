@@ -14,6 +14,10 @@ app.use("/uploads", express.static("uploads"));
 app.use("/api/auth", authRoutes);
 app.use("/api/applications", applicationRoutes);
 
+app.use("/api/health", (req, res) => {
+  res.status(200).json({ status: "ok" });
+});
+
 app.listen(process.env.PORT, () =>
   console.log("Server running on port " + process.env.PORT)
 );
