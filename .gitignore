@@ -3,3 +3,4 @@ node_modules
 dump.sql
 *.sql
 sqlrunner.js
+/uploads/*
