@@ -11,6 +11,8 @@ router.post(
     { name: "passport_docs" },
     { name: "id_documents" },
     { name: "visa_copy" },
+    // US Visa
+    { name: "previous_visa_docs", maxCount: 20 },
   ]),
   controller.createApplication
 );

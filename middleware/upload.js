@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 
 const fileFilter = (req, file, cb) => {
   const allowed = ["pdf", "jpg", "jpeg", "png"];
-  const ext = path.extname(file.originalname).substring(1);
+  const ext = path.extname(file.originalname).substring(1).toLowerCase();
 
   if (allowed.includes(ext)) cb(null, true);
   else cb(new Error("Invalid file type"), false);

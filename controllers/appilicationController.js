@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const usVisaController = require("./usVisaController");
 
 // ─── Prefix map — matches formType keys sent from the app ─────────────────────
 const PREFIX_MAP = {
@@ -7,6 +8,7 @@ const PREFIX_MAP = {
   pcc:         "PCC",
   attestation: "ATT",
   flightHotel: "FHB",
+  usVisa:       "USV",
   // legacy web keys kept for compatibility
   Visa:                    "VIS",
   Passport:                "PPT",
@@ -24,6 +26,7 @@ const TYPE_LABEL = {
   pcc:         "PCC",
   attestation: "Attestation",
   flightHotel: "Flight-Hotel Booking",
+  usVisa:       "US Visa"
 };
 
 exports.createApplication = async (req, res) => {
@@ -32,9 +35,13 @@ exports.createApplication = async (req, res) => {
     const body   = req.body;
 
     // form_type sent from app (e.g. "visa"), fallback to application_type for web
-    const formKey        = body.form_type || body.application_type;
+    const formKey = body.formType || body.form_type || body.application_type;
     const application_type = TYPE_LABEL[formKey] || formKey;
     const prefix           = PREFIX_MAP[formKey] || "APP";
+
+    if (formKey === "usVisa") {
+      return usVisaController.createApplication(req, res);
+    }
 
     // ── Generate application number ─────────────────────────────────────────
     const today = new Date().toISOString().split("T")[0];
@@ -84,8 +91,11 @@ exports.createApplication = async (req, res) => {
       Object.keys(req.files).forEach((field) => {
         req.files[field].forEach((file) => {
           documents.push({
-            type: field,        // passport_docs | id_documents | visa_copy
+            type: field,
             file: file.filename,
+            original_name: file.originalname,
+            mime_type: file.mimetype,
+            size: file.size,
           });
         });
       });
@@ -192,6 +202,12 @@ exports.getApplicationById = async (req, res) => {
     const app = rows[0];
     if (app.documents && typeof app.documents === "string") {
       try { app.documents = JSON.parse(app.documents); } catch (_) {}
+    }
+
+    if (app.form_data && typeof app.form_data === "string") {
+        try {
+            app.form_data = JSON.parse(app.form_data);
+        } catch (_) {}
     }
 
     res.json({ application: app });
