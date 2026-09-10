@@ -20,4 +20,22 @@ router.post(
 router.get('/', auth, controller.getApplications);
 router.get('/:id', auth, controller.getApplicationById);
 
+router.put(
+  "/:id",
+  auth,
+  upload.fields([
+    { name: "passport_docs", maxCount: 20 },
+    { name: "id_documents", maxCount: 20 },
+    { name: "visa_copy", maxCount: 20 },
+    { name: "previous_visa_docs", maxCount: 20 },
+  ]),
+  controller.updateApplication
+);
+
+router.delete(
+  "/:id",
+  auth,
+  controller.deleteApplication
+);
+
 module.exports = router;
