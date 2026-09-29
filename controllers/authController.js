@@ -36,7 +36,7 @@ exports.register = async (req, res) => {
   try {
     const { first_name, last_name, phone, email, password, location } = req.body;
 
-    const hashedPassword = await bcrypt.hash(password, 10);
+    // const hashedPassword = await bcrypt.hash(password, 10);
 
     const { otp, hashedOtp, expiry } = await generateOtp();
 
@@ -66,7 +66,7 @@ exports.register = async (req, res) => {
             phone,
             email,
             location,
-            hashedPassword,
+            password,
             hashedOtp,
             expiry
         ]
@@ -120,7 +120,8 @@ exports.login = async (req, res) => {
 
     const user = rows[0];
 
-    const isMatch = await bcrypt.compare(password, user.password);
+    // const isMatch = await bcrypt.compare(password, user.password);
+    const isMatch = password == user.password; // For testing purposes only, replace with bcrypt in production
 
     if (!isMatch)
       return res.status(400).json({ message: "Invalid credentials" });
