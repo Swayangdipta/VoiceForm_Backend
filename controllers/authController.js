@@ -43,9 +43,33 @@ exports.register = async (req, res) => {
     console.log("Registering user:", { first_name, last_name, phone, email, location });
 
     await pool.query(
-      `INSERT INTO users
-      (first_name,last_name,phone,email,location,password,email_otp,otp_expiry,email_verified,status)
-      VALUES (?,?,?,?,?,?,?,?,0,1)`,[first_name,last_name,phone,email,location,hashedPassword,hashedOtp,expiry]
+        `INSERT INTO users
+        (
+            first_name,
+            last_name,
+            phone,
+            email,
+            location,
+            password,
+            email_otp,
+            otp_expiry,
+            email_verified,
+            status,
+            role,
+            created_at,
+            updated_at
+        )
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, 1, 'user', NOW(), NOW())`,
+        [
+            first_name,
+            last_name,
+            phone,
+            email,
+            location,
+            hashedPassword,
+            hashedOtp,
+            expiry
+        ]
     );
 
     await sendEmail({

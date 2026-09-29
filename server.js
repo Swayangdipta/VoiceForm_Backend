@@ -18,6 +18,6 @@ app.use("/api/health", (req, res) => {
   res.status(200).json({ status: "ok" });
 });
 
-app.listen(process.env.PORT, () =>
+app.listen(process.env.PORT, "127.0.0.1", () =>
   console.log("Server running on port " + process.env.PORT)
 );
