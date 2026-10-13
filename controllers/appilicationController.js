@@ -102,6 +102,10 @@ exports.createApplication = async (req, res) => {
     const body   = req.body;
 
     if (!userId) {
+      console.warn("createApplication missing user id", {
+        bodyKeys: Object.keys(body),
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });
@@ -241,6 +245,8 @@ exports.getApplications = async (req, res) => {
     const userId = getRequestUserId(req);
 
     if (!userId) {
+      console.warn("getApplications missing user id");
+
       return res.status(400).json({
         message: "User id is required",
       });
@@ -270,6 +276,10 @@ exports.getApplicationById = async (req, res) => {
     const { id } = req.params;
 
     if (!userId) {
+      console.warn("getApplicationById missing user id", {
+        application_id: id,
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });
@@ -311,6 +321,11 @@ exports.updateApplication = async (req, res) => {
     const body = req.body;
 
     if (!userId) {
+      console.warn("updateApplication missing user id", {
+        application_id: id,
+        bodyKeys: Object.keys(body),
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });
@@ -590,6 +605,10 @@ exports.deleteApplication = async (req, res) => {
     const { id } = req.params;
 
     if (!userId) {
+      console.warn("deleteApplication missing user id", {
+        application_id: id,
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });

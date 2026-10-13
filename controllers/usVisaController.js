@@ -172,10 +172,16 @@ exports.createApplication = async (req, res) => {
     const body = { ...req.body };
 
     if (!userId) {
+      console.warn("US Visa createApplication missing user id", {
+        bodyKeys: Object.keys(body),
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });
     }
+
+    body.primary_mobile = body.primary_mobile || body.mobile;
 
     // Convert repeater JSON strings back into arrays
     JSON_FIELDS.forEach((field) => {
@@ -186,6 +192,8 @@ exports.createApplication = async (req, res) => {
     const validationError = validate(body);
 
     if (validationError) {
+      console.warn("US Visa createApplication validation error:", validationError);
+
       return res.status(400).json({
         message: validationError,
       });
@@ -287,10 +295,17 @@ exports.updateApplication = async (req, res) => {
     const body = { ...req.body };
 
     if (!userId) {
+      console.warn("US Visa updateApplication missing user id", {
+        application_id: id,
+        bodyKeys: Object.keys(body),
+      });
+
       return res.status(400).json({
         message: "User id is required",
       });
     }
+
+    body.primary_mobile = body.primary_mobile || body.mobile;
 
     // -------------------------------------------------
     // Find application + verify ownership
@@ -335,6 +350,8 @@ exports.updateApplication = async (req, res) => {
     const validationError = validate(body);
 
     if (validationError) {
+      console.warn("US Visa updateApplication validation error:", validationError);
+
       // Multer may already have saved newly uploaded
       // files. Remove them because the update is rejected.
       const newDocuments = getUploadedDocuments(
