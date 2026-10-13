@@ -86,10 +86,26 @@ const deleteUploadedFile = (filename) => {
   }
 };
 
+const getRequestUserId = (req) => {
+  return (
+    req.user?.id ||
+    req.body?.user_id ||
+    req.body?.applicant_id ||
+    req.query?.user_id ||
+    req.query?.applicant_id
+  );
+};
+
 exports.createApplication = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const body   = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     // form_type sent from app (e.g. "visa"), fallback to application_type for web
     const formKey = body.formType || body.form_type || body.application_type;
@@ -222,7 +238,13 @@ exports.createApplication = async (req, res) => {
 // ─── Get all applications for the logged-in agent ─────────────────────────────
 exports.getApplications = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     const [rows] = await pool.query(
       `SELECT id, application_no, application_type, first_name, last_name,
@@ -244,8 +266,14 @@ exports.getApplications = async (req, res) => {
 // ─── Get single application detail ───────────────────────────────────────────
 exports.getApplicationById = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const { id } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     const [rows] = await pool.query(
       `SELECT * FROM application WHERE id = ? AND user_id = ?`,
@@ -278,9 +306,15 @@ exports.getApplicationById = async (req, res) => {
 // ─── Update application ──────────────────────────────────────────────────────
 exports.updateApplication = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const { id } = req.params;
     const body = req.body;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     // ── Get existing application + verify ownership ─────────────────────────
     const [rows] = await pool.query(
@@ -552,8 +586,14 @@ exports.updateApplication = async (req, res) => {
 // ─── Delete application ──────────────────────────────────────────────────────
 exports.deleteApplication = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const { id } = req.params;
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     // ── Find application and verify ownership ───────────────────────────────
     const [rows] = await pool.query(

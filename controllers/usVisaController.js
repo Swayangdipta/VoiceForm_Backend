@@ -124,6 +124,16 @@ const parseDocuments = (documents) => {
   }
 };
 
+const getRequestUserId = (req) => {
+  return (
+    req.user?.id ||
+    req.body?.user_id ||
+    req.body?.applicant_id ||
+    req.query?.user_id ||
+    req.query?.applicant_id
+  );
+};
+
 // -------------------------
 // Generate Application No.
 // -------------------------
@@ -158,8 +168,14 @@ const generateApplicationNumber = async () => {
 
 exports.createApplication = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const body = { ...req.body };
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     // Convert repeater JSON strings back into arrays
     JSON_FIELDS.forEach((field) => {
@@ -265,10 +281,16 @@ exports.createApplication = async (req, res) => {
 
 exports.updateApplication = async (req, res) => {
   try {
-    const userId = req.user.id;
+    const userId = getRequestUserId(req);
     const { id } = req.params;
 
     const body = { ...req.body };
+
+    if (!userId) {
+      return res.status(400).json({
+        message: "User id is required",
+      });
+    }
 
     // -------------------------------------------------
     // Find application + verify ownership
