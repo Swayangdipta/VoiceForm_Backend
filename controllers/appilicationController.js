@@ -161,7 +161,7 @@ exports.createApplication = async (req, res) => {
     // ── Insert ──────────────────────────────────────────────────────────────
     const [result] = await pool.query(
       `INSERT INTO application
-        (applicant_id, applicant_type,
+        (applicant_id, user_id, applicant_type,
          application_type, passport_type, reissue_reason,
          first_name, last_name, mobile, email,
          address, city, state, pin,
@@ -171,7 +171,7 @@ exports.createApplication = async (req, res) => {
          travel_date,
          submission_date, status, application_no, documents)
        VALUES
-        (?, 'agent',
+        (NULL, ?, 'AgentUser',
          ?, ?, ?,
          ?, ?, ?, ?,
          ?, ?, ?, ?,
@@ -228,7 +228,7 @@ exports.getApplications = async (req, res) => {
       `SELECT id, application_no, application_type, first_name, last_name,
               country, status, submission_date, created_at
        FROM application
-       WHERE applicant_id = ?
+       WHERE user_id = ?
        ORDER BY created_at DESC`,
       [userId]
     );
@@ -248,7 +248,7 @@ exports.getApplicationById = async (req, res) => {
     const { id } = req.params;
 
     const [rows] = await pool.query(
-      `SELECT * FROM application WHERE id = ? AND applicant_id = ?`,
+      `SELECT * FROM application WHERE id = ? AND user_id = ?`,
       [id, userId]
     );
 
@@ -286,7 +286,7 @@ exports.updateApplication = async (req, res) => {
     const [rows] = await pool.query(
       `SELECT *
        FROM application
-       WHERE id = ? AND applicant_id = ?`,
+       WHERE id = ? AND user_id = ?`,
       [id, userId]
     );
 
@@ -443,7 +443,7 @@ exports.updateApplication = async (req, res) => {
 
     // ── Update ──────────────────────────────────────────────────────────────
     //
-    // application_no, applicant_id, applicant_type, submission_date
+    // application_no, user_id, applicant_id, applicant_type, submission_date
     // and status are deliberately NOT changed.
     //
     await pool.query(
@@ -488,7 +488,7 @@ exports.updateApplication = async (req, res) => {
          form_data = ?
 
        WHERE id = ?
-         AND applicant_id = ?`,
+         AND user_id = ?`,
       [
         applicationType,
         passport_type,
@@ -559,7 +559,7 @@ exports.deleteApplication = async (req, res) => {
     const [rows] = await pool.query(
       `SELECT id, application_no, documents
        FROM application
-       WHERE id = ? AND applicant_id = ?`,
+       WHERE id = ? AND user_id = ?`,
       [id, userId]
     );
 
@@ -588,7 +588,7 @@ exports.deleteApplication = async (req, res) => {
     // ── Delete database row ─────────────────────────────────────────────────
     await pool.query(
       `DELETE FROM application
-       WHERE id = ? AND applicant_id = ?`,
+       WHERE id = ? AND user_id = ?`,
       [id, userId]
     );
 

@@ -198,6 +198,7 @@ exports.createApplication = async (req, res) => {
       `INSERT INTO application
       (
         applicant_id,
+        user_id,
         applicant_type,
         application_type,
         first_name,
@@ -212,8 +213,9 @@ exports.createApplication = async (req, res) => {
       )
       VALUES
       (
+        NULL,
         ?,
-        'agent',
+        'AgentUser',
         ?,
         ?,
         ?,
@@ -276,7 +278,7 @@ exports.updateApplication = async (req, res) => {
       `SELECT *
        FROM application
        WHERE id = ?
-       AND applicant_id = ?
+       AND user_id = ?
        AND application_type = ?`,
       [
         id,
@@ -425,7 +427,7 @@ exports.updateApplication = async (req, res) => {
     //
     // application_no stays unchanged.
     // status stays unchanged.
-    // applicant_id stays unchanged.
+    // user_id and applicant_id stay unchanged.
     // submission_date stays unchanged.
     // created_at stays unchanged.
     //
@@ -442,7 +444,7 @@ exports.updateApplication = async (req, res) => {
          documents = ?,
          form_data = ?
        WHERE id = ?
-       AND applicant_id = ?
+       AND user_id = ?
        AND application_type = ?`,
       [
         body.first_name,
